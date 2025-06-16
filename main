@@ -1,0 +1,511 @@
+
+<!DOC<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Registro de modificaciones de productos</title>
+<!-- ============  ESTILOS  ============ -->
+<style>
+:root{
+  --azur:#007fff;
+  --gris:#e3e8ed;       /* fondo general */
+  --gris-claro:#eef3f8; /* fondo dentro de wrap */
+  --gris-borde:#b9d7ff;
+}
+*{box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+body{margin:0;background:var(--gris);color:#000;padding:20px}
+
+/* --------- CONTENEDOR GENERAL --------- */
+.wrap{max-width:1200px;margin:auto;background:#fff;padding:25px 30px;border-radius:12px;
+      box-shadow:0 3px 15px rgba(0,127,255,.25)}
+
+/* --------- ENCABEZADO --------- */
+.logo-title{display:flex;align-items:center;gap:15px;border-bottom:2px solid var(--azur);
+            padding-bottom:10px;margin-bottom:25px}
+.logo-title h1{color:#333333;font-size:28px;margin:0;font-weight:700}
+.logo-title img{height:60px}
+
+/* --------- BLOQUE "Datos del solicitante" --------- */
+.card{border:1.5px solid var(--gris-borde);background:#f9fbff;border-radius:10px;
+      padding:20px 25px;margin-bottom:25px}
+.card h2{margin:0 0 15px;font-size:20px;color:#005fcc}
+.row{display:flex;gap:15px;flex-wrap:wrap}
+.row>div{flex:1 1 200px;min-width:160px}
+label{display:block;font-weight:600;margin-bottom:4px}
+input,select,textarea{width:100%;padding:8px 10px;border:1.8px solid var(--gris-borde);
+                      border-radius:6px;font-size:14px}
+input:focus,select:focus,textarea:focus{border-color:var(--azur);outline:none;background:#f0f8ff}
+textarea{resize:vertical;min-height:60px}
+
+/* --------- SELECTOR DE FORMATOS --------- */
+.selector{display:flex;flex-wrap:wrap;gap:22px;margin-bottom:25px}
+.card-format{flex:1 1 250px;min-height:120px;border:2px dashed var(--azur);border-radius:10px;
+             display:flex;align-items:center;justify-content:center;text-align:center;
+             font-weight:700;color:var(--azur);cursor:pointer;transition:.25s;padding:14px;white-space:normal}
+.card-format:hover,.card-format.active{background:var(--azur);color:#fff}
+
+/* --------- FORMULARIOS DE FORMATO --------- */
+.formato{display:none;border:1.5px solid var(--gris-borde);border-radius:10px;
+        padding:25px;margin-bottom:30px;background:#f9fbff}
+.formato h2{margin-top:0;color:#005bcc}
+.formato h3{margin-bottom:10px;color:#005bcc}
+
+/* --------- TABLAS --------- */
+.table-wrap{overflow-x:auto;margin-top:10px;max-height:270px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{border:1.2px solid var(--gris-borde);padding:8px 10px;text-align:left}
+thead{background:#d8e9ff}
+thead th{color:#003366;font-weight:700}
+tbody tr:nth-child(even){background:#f4f9ff}
+
+/* --------- BOTONES --------- */
+.btn{background:var(--azur);border:none;color:#fff;border-radius:7px;padding:10px 18px;
+     font-weight:700;cursor:pointer;transition:.25s}
+.btn:hover{background:#0055c4}
+.delete-btn{background:#ff0217;padding:4px 10px;font-weight:700;border:none;color:#fff;border-radius:6px}
+.delete-btn:hover{background:#f6011d}
+
+/* --------- MENSAJES DE ERROR --------- */
+.error-message{color:#ff0217;font-size:13px;margin-top:4px;display:none}
+.error-input{border-color:#ff0217 !important}
+</style>
+
+<!-- ============  LIBRERÍAS PDF  ============ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+<div class="wrap">
+
+  <!-- ENCABEZADO -->
+  <div class="logo-title">
+    <img src="logo.png" alt="Logo">
+    <h1>Solicitud de modificación a SIFFS y SIFFS CA</h1>
+  </div>
+
+  <!-- DATOS DEL SOLICITANTE -->
+  <section class="card">
+    <h2>Datos del solicitante</h2>
+    <div class="row">
+      <div><label>Nombre del solicitante:</label><input id="solicitante" required></div>
+      <div><label>Área / Departamento:</label><input id="departamento" required></div>
+      <div><label>Fecha de la solicitud:</label><input type="date" id="fecha" required></div>
+    </div>
+  </section>
+
+  <!-- SELECTOR DE FORMATOS -->
+  <section class="card">
+    <h2>Selecciona un formato</h2>
+    <div class="selector">
+      <div class="card-format" data-target="f1">1. Alta / Modificación / Eliminación de producto a proveedor</div>
+      <div class="card-format" data-target="f2">2. Alta o modificación de producto</div>
+      <div class="card-format" data-target="f3">3. Alta / modificación de usuario (SIFFS / SIIF)</div>
+      <div class="card-format" data-target="f4">4. Modificación de OC</div>
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- ========================== FORMATO 1 ======================== -->
+  <!-- ============================================================= -->
+  <section class="formato" id="f1">
+    <h2>FORMATO DE SOLICITUD DE ALTA, MODIFICACIÓN Y ELIMINACIÓN DE PRODUCTO A PROVEEDOR</h2>
+    <h3>DATOS DEL PROVEEDOR</h3>
+    <label>Nombre del Proveedor:</label>
+    <input id="f1-prov">
+    <h3 style="margin-top:25px">PRODUCTO PARA DAR DE ALTA, MODIFICACIÓN O ELIMINACIÓN<br>
+      <small>(Si el producto no está registrado en sistema solicitar alta de producto)</small>
+    </h3>
+    <div class="row">
+      <div><label>Clave Producto</label><input id="f1-clave"></div>
+      <div><label>Producto</label><input id="f1-prod"></div>
+      <div><label>Precio</label><input id="f1-precio" type="number" step="0.01" min="0"></div>
+      <div><label>Moneda</label><input id="f1-moneda"></div>
+      <div>
+        <label>Acción</label>
+        <select id="f1-accion"><option>Alta</option><option>Modificación</option><option>Eliminación</option></select>
+      </div>
+      <div style="align-self:end"><button class="btn" id="f1-add">Agregar</button></div>
+      </div>
+      <div class="table-wrap">
+      <table id="f1-table">
+        <thead><tr>
+          <th>Clave Producto</th><th>Producto</th><th>Precio</th><th>Moneda</th><th>Acción</th><th>Acciones</th>
+        </tr></thead><tbody></tbody>
+      </table>
+    </div>
+
+    <div style="text-align:right;margin-top:15px">
+      <button class="btn download" data-table="f1-table" data-title="Formato 1 – Prod. a Proveedor">Guardar y descargar PDF</button>
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- ========================== FORMATO 2 ======================== -->
+  <!-- ============================================================= -->
+  <section class="formato" id="f2">
+    <h2>FORMATO DE SOLICITUD DE ALTA O MODIFICACIÓN DE PRODUCTO</h2>
+
+    <h3>DATOS GENERALES DEL PRODUCTO</h3>
+    <div class="row">
+      <div><label>Nombre del producto</label><input id="f2-nombre"></div>
+      <div>
+        <label>Modificación del producto</label>
+        <select id="f2-mod"><option>Modificar Producto</option><option>Nuevo Producto</option></select>
+      </div>
+      <div><label>Presentación</label><input id="f2-pres"></div>
+      <div><label>Clave SAT</label><input id="f2-sat" type="number"></div>
+    </div>
+    <div class="row">
+      <div>
+        <label>Tipo de Operación</label>
+        <select id="f2-tipo">
+          <option>Rancho Viejo</option><option>Expor San Antonio</option><option>Compra – Venta</option>
+          <option>COMODITIES</option><option>Operaciones discontinuas</option><option>MR LUCKY</option>
+          <option>Exportación</option><option>DARK KITCHEN</option><option>MR LUCKY GL</option><option>MAR BRAN</option>
+        </select>
+      </div>
+      <div style="flex:2 1 100%">
+        <label>Información adicional</label><textarea id="f2-info"></textarea>
+      </div>
+      <div style="align-self:end"><button class="btn" id="f2-add">Agregar</button></div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="f2-table">
+        <thead><tr>
+          <th>Nombre</th><th>Modificación</th><th>Presentación</th><th>Clave SAT</th><th>Tipo Oper.</th><th>Info Adic.</th><th>Acciones</th>
+        </tr></thead><tbody></tbody>
+      </table>
+    </div>
+
+    <div style="text-align:right;margin-top:15px">
+      <button class="btn download" data-table="f2-table" data-title="Formato 2 – Alta/Mod Producto">Guardar y descargar PDF</button>
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- ========================== FORMATO 3 ======================== -->
+  <!-- ============================================================= -->
+  <section class="formato" id="f3">
+    <h2>FORMATO DE SOLICITUD DE ALTA Y MODIFICACIÓN DE USUARIO EN LOS SISTEMAS SIFFS Y SIIF CONTROL ALMACENES</h2>
+
+    <h3>DATOS DEL USUARIO</h3>
+    <div class="row">
+      <div><label>Nombre Completo</label><input id="f3-nombre"></div>
+      <div><label>Correo Electrónico</label><input id="f3-correo" type="email"></div>
+      <div><label>Departamento / Área</label><input id="f3-area"></div>
+      <div><label>Rol Solicitado</label><input id="f3-rol"></div>
+    </div>
+
+    <h3>ACCESO AL SISTEMA</h3>
+    <div class="row">
+      <div>
+        <label>Sistema</label>
+        <select id="f3-sistema"><option>SIFFS</option><option>SIFFS Almacenes</option><option>Ambos</option></select>
+      </div>
+      <div style="flex:2 1 100%"><label>Actividades a realizar</label><textarea id="f3-act"></textarea></div>
+      <div style="align-self:end"><button class="btn" id="f3-add">Agregar</button></div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="f3-table">
+        <thead><tr>
+          <th>Nombre</th><th>Correo</th><th>Área</th><th>Rol</th><th>Sistema</th><th>Actividades</th><th>Acciones</th>
+        </tr></thead><tbody></tbody>
+      </table>
+    </div>
+
+    <div style="text-align:right;margin-top:15px">
+      <button class="btn download" data-table="f3-table" data-title="Formato 3 – Usuarios SIFFS/SIIF">Guardar y descargar PDF</button>
+    </div>
+  </section>
+
+  <!-- ============================================================= -->
+  <!-- ========================== FORMATO 4 ======================== -->
+  <!-- ============================================================= -->
+  <section class="formato" id="f4">
+    <h2>FORMATO DE SOLICITUD DE MODIFICACIÓN DE OC</h2>
+
+    <h3>TIPO DE SOLICITUD</h3>
+    <div class="row">
+      <div><label>Tipo</label>
+        <select id="f4-tipo"><option>Actualización de Precio</option><option>Agregar Producto</option><option>Modificar cantidad de Producto</option></select>
+      </div>
+    </div>
+
+    <h3>INFORMACIÓN DETALLADA</h3>
+    <div class="row">
+      <div><label>Número de OC</label><input id="f4-oc"></div>
+      <div><label>Proveedor</label><input id="f4-prov"></div>
+      <div style="flex:2 1 100%"><label>Productos</label><textarea id="f4-prods"></textarea></div>
+    </div>
+
+    <h3>DETALLE POR PRODUCTO</h3>
+    <div class="row">
+      <div><label>Cantidad</label><input id="f4-cant" type="number" min="1"></div>
+      <div><label>Clave Producto</label><input id="f4-clave"></div>
+      <div><label>Descripción</label><input id="f4-desc"></div>
+      <div><label>Precio Anterior</label><input id="f4-prev" type="number" step="0.01" min="0"></div>
+      <div><label>Precio Nuevo</label><input id="f4-new" type="number" step="0.01" min="0"></div>
+      <div style="flex:2 1 100%"><label>Comentarios</label><textarea id="f4-com"></textarea></div>
+      <div style="align-self:end"><button class="btn" id="f4-add">Agregar</button></div>
+    </div>
+
+    <div class="table-wrap">
+      <table id="f4-table">
+        <thead><tr>
+          <th>Tipo</th><th>N° OC</th><th>Proveedor</th><th>Productos</th><th>Cant.</th><th>Clave</th><th>Descripción</th>
+          <th>Previo</th><th>Nuevo</th><th>Comentarios</th><th>Acciones</th>
+        </tr></thead><tbody></tbody>
+      </table>
+    </div>
+
+    <h3>Justificación de la modificación de la OC</h3>
+    <textarea id="f4-just" style="width:100%;min-height:80px;margin-bottom:15px"></textarea>
+
+    <div style="text-align:right">
+      <button class="btn download" data-table="f4-table" data-title="Formato 4 – Modificación OC">Guardar y descargar PDF</button>
+    </div>
+  </section>
+
+</div><!-- /.wrap -->
+
+<!-- ============  JAVASCRIPT  ============ -->
+<script>
+// Mostrar/ocultar formatos
+document.querySelectorAll('.card-format').forEach(card => {
+  card.addEventListener('click', () => {
+    document.querySelectorAll('.card-format').forEach(c => c.classList.remove('active'));
+    card.classList.add('active');
+    document.querySelectorAll('.formato').forEach(f => f.style.display = 'none');
+    document.getElementById(card.dataset.target).style.display = 'block';
+  });
+});
+
+// Helpers
+const clear = ids => ids.forEach(id => document.getElementById(id).value = '');
+
+const addRow = (tbody, data) => {
+  const tr = document.createElement('tr');
+  data.forEach(item => {
+    const td = document.createElement('td');
+    td.textContent = item;
+    tr.appendChild(td);
+  });
+  
+  // Botón eliminar
+  const tdAction = document.createElement('td');
+  const btnDelete = document.createElement('button');
+  btnDelete.className = 'delete-btn';
+  btnDelete.textContent = 'Eliminar';
+  tdAction.appendChild(btnDelete);
+  tr.appendChild(tdAction);
+  
+  tbody.appendChild(tr);
+};
+
+const enableDelete = tableId => {
+  document.getElementById(tableId).addEventListener('click', e => {
+    if (e.target.classList.contains('delete-btn')) {
+      e.target.closest('tr').remove();
+    }
+  });
+};
+
+// ----------- Formato 1 -----------
+enableDelete('f1-table');
+document.getElementById('f1-add').onclick = () => {
+  const clave = document.getElementById('f1-clave').value.trim();
+  const prod = document.getElementById('f1-prod').value.trim();
+  const precio = document.getElementById('f1-precio').value.trim();
+  const moneda = document.getElementById('f1-moneda').value.trim();
+  const accion = document.getElementById('f1-accion').value;
+
+  if (!clave || !prod) {
+    alert('Los campos Clave Producto y Producto son obligatorios');
+    return;
+  }
+
+  addRow(document.querySelector('#f1-table tbody'), [clave, prod, precio, moneda, accion]);
+  clear(['f1-clave', 'f1-prod', 'f1-precio', 'f1-moneda']);
+};
+
+// ----------- Formato 2 -----------
+enableDelete('f2-table');
+document.getElementById('f2-add').onclick = () => {
+  const nombre = document.getElementById('f2-nombre').value.trim();
+  const mod = document.getElementById('f2-mod').value;
+  const pres = document.getElementById('f2-pres').value.trim();
+  const sat = document.getElementById('f2-sat').value.trim();
+  const tipo = document.getElementById('f2-tipo').value;
+  const info = document.getElementById('f2-info').value.trim();
+
+  if (!nombre || !pres || !sat) {
+    alert('Llena los campos obligatorios');
+    return;
+  }
+
+  addRow(document.querySelector('#f2-table tbody'), [nombre, mod, pres, sat, tipo, info]);
+  clear(['f2-nombre', 'f2-pres', 'f2-sat', 'f2-info']);
+};
+
+// ----------- Formato 3 -----------
+enableDelete('f3-table');
+document.getElementById('f3-add').onclick = () => {
+  const nombre = document.getElementById('f3-nombre').value.trim();
+  const correo = document.getElementById('f3-correo').value.trim();
+  const area = document.getElementById('f3-area').value.trim();
+  const rol = document.getElementById('f3-rol').value.trim();
+  const sistema = document.getElementById('f3-sistema').value;
+  const actividades = document.getElementById('f3-act').value.trim();
+
+  if (!nombre || !correo) {
+    alert('Nombre y correo son obligatorios');
+    return;
+  }
+
+  addRow(document.querySelector('#f3-table tbody'), [nombre, correo, area, rol, sistema, actividades]);
+  clear(['f3-nombre', 'f3-correo', 'f3-area', 'f3-rol', 'f3-act']);
+};
+
+// ----------- Formato 4 -----------
+enableDelete('f4-table');
+document.getElementById('f4-add').onclick = () => {
+  const tipo = document.getElementById('f4-tipo').value;
+  const oc = document.getElementById('f4-oc').value.trim();
+  const prov = document.getElementById('f4-prov').value.trim();
+  const prods = document.getElementById('f4-prods').value.trim();
+  const cant = document.getElementById('f4-cant').value.trim();
+  const clave = document.getElementById('f4-clave').value.trim();
+  const desc = document.getElementById('f4-desc').value.trim();
+  const prev = document.getElementById('f4-prev').value.trim();
+  const nuevo = document.getElementById('f4-new').value.trim();
+  const com = document.getElementById('f4-com').value.trim();
+
+  if (!oc || !prov || !clave) {
+    alert('Hay campos obligatorios vacíos');
+    return;
+  }
+
+  addRow(document.querySelector('#f4-table tbody'), [tipo, oc, prov, prods, cant, clave, desc, prev, nuevo, com]);
+  clear(['f4-cant', 'f4-clave', 'f4-desc', 'f4-prev', 'f4-new', 'f4-com']);
+};
+
+// ----------- Exportar a PDF -----------
+const { jsPDF } = window.jspdf;
+
+document.querySelectorAll('.download').forEach(btn => {
+  btn.addEventListener('click', () => exportPDF(btn));
+});
+
+function exportPDF(btn) {
+  const tableId = btn.dataset.table;
+  const table = document.getElementById(tableId);
+  const formato = btn.closest('.formato');
+  const tituloFormato = formato.querySelector('h2').textContent;
+
+  // Validación especial para Formato 4
+  if (tableId === 'f4-table') {
+    const just = document.getElementById('f4-just').value.trim();
+    if (!just) {
+      alert('La justificación de la OC es obligatoria antes de descargar el PDF');
+      return;
+    }
+  }
+
+  // Validar datos del solicitante
+  const solicitante = document.getElementById('solicitante').value.trim();
+  const departamento = document.getElementById('departamento').value.trim();
+  const fecha = document.getElementById('fecha').value;
+
+  if (!solicitante || !departamento || !fecha) {
+    alert('Completa los datos del solicitante');
+    return;
+  }
+
+  // Obtener encabezados (excluyendo columna Acciones)
+  const headers = [...table.querySelectorAll('thead th')]
+    .slice(0, -1)
+    .map(th => th.textContent.trim());
+
+  // Obtener datos (excluyendo columna Acciones)
+  const body = [...table.querySelectorAll('tbody tr')].map(tr => {
+    return [...tr.querySelectorAll('td')]
+      .slice(0, -1)
+      .map(td => td.textContent.trim());
+  });
+
+  if (body.length === 0) {
+    alert('No hay registros para exportar');
+    return;
+  }
+
+  const doc = new jsPDF('p', 'pt', 'a4');
+  const margin = 20;
+  let y = 80;
+
+  // Logo
+  const img = new Image();
+  img.src = 'logo.png';
+  
+  img.onload = () => {
+    doc.addImage(img, 'PNG', margin, y, 80, 40);
+    y += 60;
+    drawContent();
+  };
+
+  img.onerror = () => {
+    y += 20;
+    drawContent();
+  };
+
+  function drawContent() {
+    const pageWidth = doc.internal.pageSize.getWidth();
+
+    // Título
+    doc.setFontSize(16);
+    const titleLines = doc.splitTextToSize(tituloFormato, pageWidth - margin * 2);
+    doc.text(titleLines, pageWidth / 2, y, { align: 'center' });
+    y += titleLines.length * 14 + 5;
+
+    // Línea divisoria
+    doc.setDrawColor(0);
+    doc.setLineWidth(0.5);
+    doc.line(margin, y, pageWidth - margin, y);
+    y += 14;
+
+    // Datos solicitante
+    doc.setFontSize(11);
+    doc.text(`Solicitante: ${solicitante}`, margin, y); y += 16;
+    doc.text(`Departamento: ${departamento}`, margin, y); y += 16;
+    doc.text(`Fecha: ${fecha}`, margin, y); y += 20;
+
+    // Tabla
+    doc.autoTable({
+      head: [headers],
+      body: body,
+      startY: y,
+      margin: { left: margin, right: margin },
+      styles: { fontSize: 9 },
+      headStyles: { 
+        fillColor: [0, 102, 204],
+        textColor: [255, 255, 255]
+      },
+      bodyStyles: { 
+        fillColor: [230, 240, 255]
+      },
+      alternateRowStyles: {
+        fillColor: [255, 255, 255]
+      }
+    });
+
+    // Guardar con nombre adecuado
+    const fileName = tituloFormato.replace(/[^\w\s]/gi, '').replace(/\s+/g, '_').toLowerCase() + '.pdf';
+    doc.save(fileName);
+  }
+}
+</script>
+</body>
+</html>
