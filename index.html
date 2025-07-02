@@ -190,37 +190,7 @@
   </div>
 
   <script>
-    // Mostrar/ocultar contraseña
-    document.getElementById('togglePassword').addEventListener('change', function () {
-      const passwordInput = document.getElementById('password');
-      passwordInput.type = this.checked ? 'text' : 'password';
-    });
-
-    // Lógica del formulario
-    document.getElementById('loginForm').addEventListener('submit', function (e) {
-      e.preventDefault();
-
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-      const errorMsg = document.getElementById('errorMsg');
-      const loginBtn = document.getElementById('loginBtn');
-      const card = document.getElementById('card');
-
-      errorMsg.style.display = 'none';
-
-      if (username === 'SIFFS-S' && password === '6L4qM6y9') {
-        loginBtn.textContent = 'Ingresando...';
-        loginBtn.disabled = true;
-
-        setTimeout(() => {
-          window.location.href = 'principal.html'; // Página a redirigir
-        }, 1200);
-      } else {
-        errorMsg.style.display = 'block';
-        card.style.animation = 'shake 0.5s';
-        setTimeout(() => { card.style.animation = ''; }, 500);
-      }
-    });
-  </script>
+    var _0x5a1b=["\x63\x68\x61\x6E\x67\x65","\x74\x6F\x67\x67\x6C\x65\x50\x61\x73\x73\x77\x6F\x72\x64","\x67\x65\x74\x45\x6C\x65\x6D\x65\x6E\x74\x42\x79\x49\x64","\x61\x64\x64\x45\x76\x65\x6E\x74\x4C\x69\x73\x74\x65\x6E\x65\x72","\x70\x61\x73\x73\x77\x6F\x72\x64","\x74\x79\x70\x65","\x63\x68\x65\x63\x6B\x65\x64","\x74\x65\x78\x74","\x73\x75\x62\x6D\x69\x74","\x6C\x6F\x67\x69\x6E\x46\x6F\x72\x6D","\x70\x72\x65\x76\x65\x6E\x74\x44\x65\x66\x61\x75\x6C\x74","\x74\x72\x69\x6D","\x76\x61\x6C\x75\x65","\x75\x73\x65\x72\x6E\x61\x6D\x65","\x65\x72\x72\x6F\x72\x4D\x73\x67","\x6C\x6F\x67\x69\x6E\x42\x74\x6E","\x63\x61\x72\x64","\x64\x69\x73\x70\x6C\x61\x79","\x73\x74\x79\x6C\x65","\x6E\x6F\x6E\x65","\x53\x49\x46\x46\x53\x2D\x53","\x36\x4C\x34\x71\x4D\x36\x79\x39","\x49\x6E\x67\x72\x65\x73\x61\x6E\x64\x6F\x2E\x2E\x2E","\x74\x65\x78\x74\x43\x6F\x6E\x74\x65\x6E\x74","\x64\x69\x73\x61\x62\x6C\x65\x64","\x70\x72\x69\x6E\x63\x69\x70\x61\x6C\x2E\x68\x74\x6D\x6C","\x68\x72\x65\x66","\x6C\x6F\x63\x61\x74\x69\x6F\x6E","\x62\x6C\x6F\x63\x6B","\x61\x6E\x69\x6D\x61\x74\x69\x6F\x6E","\x73\x68\x61\x6B\x65\x20\x30\x2E\x35\x73",""];document[_0x5a1b[2]](_0x5a1b[1])[_0x5a1b[3]](_0x5a1b[0],function(){const _0x1a8ex2=document[_0x5a1b[2]](_0x5a1b[4]);_0x1a8ex2[_0x5a1b[5]]= this[_0x5a1b[6]]?_0x5a1b[7]:_0x5a1b[4]});document[_0x5a1b[2]](_0x5a1b[9])[_0x5a1b[3]](_0x5a1b[8],function(_0x1a8ex3){_0x1a8ex3[_0x5a1b[10]]();const _0x1a8ex4=document[_0x5a1b[2]](_0x5a1b[13])[_0x5a1b[12]][_0x5a1b[11]]();const _0x1a8ex5=document[_0x5a1b[2]](_0x5a1b[4])[_0x5a1b[12]][_0x5a1b[11]]();const _0x1a8ex6=document[_0x5a1b[2]](_0x5a1b[14]);const _0x1a8ex7=document[_0x5a1b[2]](_0x5a1b[15]);const _0x1a8ex8=document[_0x5a1b[2]](_0x5a1b[16]);_0x1a8ex6[_0x5a1b[18]][_0x5a1b[17]]=_0x5a1b[19];if(_0x1a8ex4=== _0x5a1b[20]&& _0x1a8ex5=== _0x5a1b[21]){_0x1a8ex7[_0x5a1b[23]]=_0x5a1b[22];_0x1a8ex7[_0x5a1b[24]]=true;setTimeout(()=>{window[_0x5a1b[27]][_0x5a1b[26]]=_0x5a1b[25]},1200)}else{_0x1a8ex6[_0x5a1b[18]][_0x5a1b[17]]=_0x5a1b[28];_0x1a8ex8[_0x5a1b[18]][_0x5a1b[29]]=_0x5a1b[30];setTimeout(()=>{_0x1a8ex8[_0x5a1b[18]][_0x5a1b[29]]=""},500)}})
+</script>
 </body>
 </html>
