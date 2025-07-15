@@ -49,10 +49,11 @@ if (!isset($_SESSION['usuario'])) {
       <section class="card">
         <h2>Selecciona un formato</h2>
         <div class="selector">
-          <div class="card-format" data-target="f1">1. Alta / Modificación / Eliminación de producto a proveedor SIFFS</div>
-          <div class="card-format" data-target="f2">2. Alta o modificación de producto SIFFS</div>
-          <div class="card-format" data-target="f3">3. Formato De Solicitud De Alta y Modificación De Usuario En El Sistema De Información.</div>
-          <div class="card-format" data-target="f4">4. Modificación de OC SIFFS CA</div>
+          <div class="card-format" data-target="f1">1. Alta / Modificación / Desactivación de producto a proveedor SIFFS.</div>
+          <div class="card-format" data-target="f2">2. Alta / Modificación / Desactivación de producto SIFFS.</div>
+          <div class="card-format" data-target="f3">3. Formato de Solicitud de alta y modificación de usuario en el sistema de información.</div>
+          <div class="card-format" data-target="f4">4. Modificación de OC SIFFS CA.</div>
+          <div class="card-format" data-target="f5">5. Alta / Modificación / Desactivación de productos a clientes.</div>
         </div>
       </section>
 
@@ -60,7 +61,7 @@ if (!isset($_SESSION['usuario'])) {
       <!-- ========================== FORMATO 1 ======================== -->
       <!-- ============================================================= -->
       <section class="formato" id="f1">
-        <h2>FORMATO DE SOLICITUD DE ALTA, MODIFICACIÓN Y ELIMINACIÓN DE PRODUCTO A PROVEEDOR</h2>
+        <h2>FORMATO DE SOLICITUD DE ALTA, MODIFICACIÓN Y ELIMINACIÓN DE PRODUCTO A PROVEEDOR SIFFS</h2>
         <h3>DATOS DEL PROVEEDOR</h3>
         <div>
           <label>Nombre del Proveedor:</label>
@@ -116,7 +117,7 @@ if (!isset($_SESSION['usuario'])) {
       <!-- ========================== FORMATO 2 ======================== -->
       <!-- ============================================================= -->
       <section class="formato" id="f2">
-        <h2>FORMATO DE SOLICITUD DE ALTA O MODIFICACIÓN DE PRODUCTO</h2>
+        <h2>FORMATO DE SOLICITUD DE ALTA / MODIFICACIÓN / DESACTIVACIÓN DE PRODUCTO SIFFS.</h2>
 
         <h3>DATOS GENERALES DEL PRODUCTO</h3>
         <div class="row">
@@ -238,7 +239,7 @@ if (!isset($_SESSION['usuario'])) {
       <!-- ========================== FORMATO 4 ======================== -->
       <!-- ============================================================= -->
       <section class="formato" id="f4">
-        <h2>FORMATO DE SOLICITUD DE MODIFICACIÓN DE OC</h2>
+        <h2>FORMATO DE SOLICITUD DE MODIFICACIÓN DE OC SIFFS CA</h2>
 
         <h3>TIPO DE SOLICITUD</h3>
         <div class="row">
@@ -299,6 +300,82 @@ if (!isset($_SESSION['usuario'])) {
             descargar PDF</button>
         </div>
       </section>
+
+
+      
+      <!-- ============================================================= -->
+      <!-- ========================== FORMATO 5 ======================== -->
+      <!-- ============================================================= -->
+      <section class="formato" id="f5">
+        <h2>FORMATO DE ALTA / MODIFICACIÓN / DESACTIVACIÓN DE PRODUCTOS A CLIENTES</h2>
+
+        <h3>TIPO DE SOLICITUD</h3>
+        <div class="row">
+          <div><label>Tipo</label>
+            <select id="f5-tipo">
+              <option>Actualización de Precio</option>
+              <option>Agregar Producto</option>
+              <option>Modificar cantidad de Producto</option>
+            </select>
+          </div>
+        </div>
+
+        <h3>INFORMACIÓN DETALLADA</h3>
+        <div class="row">
+          <div><label>Nombre del Cliente</label><input id="f5-cliente"></div>
+        </div>
+        
+
+        <h3>DETALLE POR PRODUCTO</h3>
+        <div class="row">
+          <div><label>Clave Producto</label><input id="f5-clave"></div>
+          <div><label>Producto</label><input id="f5-producto"></div>
+          <div><label>Precio</label><input id="f5-precio" type="number" step="0.01" min="0"></div>
+        </div>
+
+        <div class="row">
+            <div>
+            <label>Tipo de Operación</label>
+            <select id="f5-tipo-operacion">
+              <option>Rancho Viejo</option>
+              <option>Expor San Antonio</option>
+              <option>Compra – Venta</option>
+              <option>COMODITIES</option>
+              <option>Operaciones discontinuas</option>
+              <option>MR LUCKY</option>
+              <option>Exportación</option>
+              <option>DARK KITCHEN</option>
+              <option>MR LUCKY GL</option>
+              <option>MAR BRAN</option>
+            </select>
+          </div>
+          </div>
+          <div style="align-self:end; display: flex; justify-content: end;"><button class="btn" id="f5-add">Agregar</button></div>
+          
+        
+
+        <div class="table-wrap">
+          <table id="f5-table">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Cliente</th>
+                <th>Clave</th>
+                <th>Producto</th>
+                <th>Precio</th>
+                <th>Operación</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div style="text-align:right">
+          <button class="btn download" style="margin-top: 10px;" data-table="f5-table" data-title="Formato 5 – Alta/Mod Productos Clientes ">Guardar y
+            descargar PDF</button>
+        </div>
+      </section>
     </main>
     <footer>
     </footer>
@@ -306,4 +383,4 @@ if (!isset($_SESSION['usuario'])) {
 </body>
 
 </html>
-<script src="../JS/index.js" type="module"></script>
+<script src="../JS/index.js?v=1.2" type="module"></script>

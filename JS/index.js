@@ -125,13 +125,32 @@ document.getElementById('f4-add').onclick = () => {
     addRow(document.querySelector('#f4-table tbody'), [tipo, oc, prov, prods, cant, clave, prev, nuevo, just]);
     clear(['f4-cant', 'f4-clave', 'f4-producto', 'f4-prev', 'f4-new', 'f4-just']);
   }
-
-
 };
 
+// Limpiar campos de Formato 4
 document.getElementById('f4-clear').onclick = () => {
   clear([ 'f4-oc', 'f4-prov',]);
 }
+
+
+// ----------- Formato 5 -----------
+enableDelete('f5-table');
+document.getElementById('f5-add').onclick = () => {
+  console.log('Formato 5');
+  const tipo = document.getElementById('f5-tipo').value;
+  const cliente = document.getElementById('f5-cliente').value.trim();
+  const clave = document.getElementById('f5-clave').value.trim();
+  const prods = document.getElementById('f5-producto').value.trim();
+  const precio = document.getElementById('f5-precio').value.trim();
+  const operacion = document.getElementById('f5-tipo-operacion').value.trim();
+
+  if (!tipo || !cliente ||  !clave ||!prods || !precio || !operacion) {
+    validarCamposLista();
+  } else {
+    addRow(document.querySelector('#f5-table tbody'), [tipo, cliente, clave, prods , precio, operacion]);
+    clear(['f5-cliente', 'f5-clave', 'f5-producto', 'f5-precio']);
+  }
+};
 
 // ----------- Exportar a PDF -----------
 const { jsPDF } = window.jspdf;
