@@ -266,3 +266,20 @@ tbody tr:nth-child(even) {
     font-weight: 500;
     cursor: pointer;
 }
+
+.card-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.card-item {
+  margin: 10px 0;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 10px;
+}
+.card-item p {
+  margin: 0.3em 0;
+}
+

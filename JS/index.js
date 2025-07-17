@@ -136,7 +136,6 @@ document.getElementById('f4-clear').onclick = () => {
 // ----------- Formato 5 -----------
 enableDelete('f5-table');
 document.getElementById('f5-add').onclick = () => {
-  console.log('Formato 5');
   const tipo = document.getElementById('f5-tipo').value;
   const cliente = document.getElementById('f5-cliente').value.trim();
   const clave = document.getElementById('f5-clave').value.trim();
@@ -152,36 +151,114 @@ document.getElementById('f5-add').onclick = () => {
   }
 };
 
+// ---------- Formato 6 -----------
+
+const tipo = document.getElementById('f6-tipo');
+  const mantenimientoDiv = document.getElementById("opciones-mantenimiento");
+  tipo.addEventListener("change", function () {
+    if (tipo.value === "Mantenimiento") {
+      mantenimientoDiv.style.display = "block";
+    } else {
+      mantenimientoDiv.style.display = "none";
+    }
+  });
+
+
+document.getElementById('f6-add').onclick = () => {
+  const cambio = document.getElementById('f6-cambio').value.trim();
+  const descripcion = document.getElementById('f6-descripcion').value.trim();
+  const justificacion = document.getElementById('f6-justificacion').value.trim();
+  const observacion = document.getElementById('f6-observacion').value.trim();
+  const tipoValor = tipo.value;
+  const contenedor = document.getElementById('f6-lista');
+   const tarjeta = document.createElement('div');
+    tarjeta.classList.add('card-item');
+
+  if (!tipoValor || !cambio ||  !descripcion ||!justificacion) {
+    validarCamposLista();
+  } else {
+
+    if(contenedor.length === 0) {
+      document.getElementById('f6-add').disabled = false;
+    }
+    
+
+    document.getElementById('f6-add').disabled = true;
+    let contenidoHTML = `
+    <p><strong>Tipo:</strong> ${tipoValor}</p>
+  `;
+
+      if (tipoValor === 'Mantenimiento') {
+        contenidoHTML += `<p><strong>Plataforma:</strong> SIFFS</p>`;
+      }
+      contenidoHTML += `
+      <p><strong>Cambio:</strong> ${cambio}</p>
+      <p><strong>Descripción:</strong> ${descripcion}</p>
+      <p><strong>Justificación:</strong> ${justificacion}</p>
+      <p><strong>Observaciones:</strong> ${observacion}</p>
+      <button class="delete-btn">Eliminar</button>
+    `;
+
+    tarjeta.innerHTML = contenidoHTML;
+
+    // Agregar botón eliminar
+    tarjeta.querySelector('.delete-btn').onclick = () => {
+      contenedor.removeChild(tarjeta);
+      document.getElementById('f6-add').disabled = false;
+    };
+
+    contenedor.appendChild(tarjeta);
+  }
+};
+
 // ----------- Exportar a PDF -----------
 const { jsPDF } = window.jspdf;
 
 document.querySelectorAll('.download').forEach(btn => {
   btn.addEventListener('click', (btn, function (e) {
 
-    // Validar datos del solicitante
-    const solicitante = document.getElementById('solicitante').value.trim();
-    const puesto = document.getElementById('puesto').value.trim();
-    const departamento = document.getElementById('departamento').value.trim();
-    const fecha = document.getElementById('fecha').value;
-    // Registros  
-    const tableId = btn.dataset.table;
-    const table = document.getElementById(tableId);
-    const filas = table.querySelectorAll('tbody tr');
+      // Validar datos del solicitante
+        const solicitante = document.getElementById('solicitante').value.trim();
+        const puesto = document.getElementById('puesto').value.trim();
+        const departamento = document.getElementById('departamento').value.trim();
+        const fecha = document.getElementById('fecha').value;
 
+        const tableId = btn.dataset.table;
+        const table = document.getElementById(tableId);
+        
+        let filas = [];
+        if (table) {
+          filas = table.querySelectorAll('tbody tr');
+        }
 
+        // Si es F6, revisamos si hay tarjetas agregadas
+        let tarjetas = [];
+        if (tableId === 'f6-table') {
+          const contenedor = document.getElementById('f6-lista');
+          tarjetas = contenedor.querySelectorAll('.card-item');
+        }
 
-    //Validación del Solicitante
-    if (!solicitante || !puesto || !departamento || !fecha) {
-      alert('Llena los campos obligatorios');
-      e.preventDefault();
-      validarSolicitante();
-    } else {
-      if (!filas.length > 0) {
-        alert('Agrega un registro');
-      } else {
+        // Validación de campos del solicitante
+        if (!solicitante || !puesto || !departamento || !fecha) {
+          alert('Llena los campos obligatorios');
+          e.preventDefault();
+          validarSolicitante();
+          return;
+        }
+
+        // Validación de registros (tabla o tarjetas)
+        const tieneRegistros = filas.length > 0 || tarjetas.length > 0;
+
+        if (!tieneRegistros) {
+          alert('Agrega al menos un registro antes de generar el PDF');
+          e.preventDefault();
+          return;
+        }
+
+        // Si todo está bien
         generarPDF();
-      }
-    }
+
+
 
 
     //Generar PDF
@@ -189,15 +266,50 @@ document.querySelectorAll('.download').forEach(btn => {
       const formato = btn.closest('.formato');
       const tituloFormato = formato.querySelector('h2')?.textContent || 'Formato';
 
-      const headers = [...table.querySelectorAll('thead th')]
-        .slice(0, -1)
-        .map(th => th.textContent.trim());
 
-      const body = [...table.querySelectorAll('tbody tr')].map(tr =>
-        [...tr.querySelectorAll('td')]
-          .slice(0, -1)
-          .map(td => td.textContent.trim())
-      );
+
+      let headers = [];
+      let body = [];
+
+      if (tableId === 'f6-table') {
+        const tarjetas = document.querySelectorAll('#f6-lista .card-item');
+
+        let incluyeMantenimiento = false;
+        tarjetas.forEach(t => {
+      const tieneCampoMantenimiento = t.innerHTML.includes('Plataforma:');
+      if (tieneCampoMantenimiento) incluyeMantenimiento = true;
+    });
+
+            headers = incluyeMantenimiento
+      ? ['Tipo', 'Plataforma', 'Cambio', 'Descripción', 'Justificación', 'Observaciones']
+      : ['Tipo', 'Cambio', 'Descripción', 'Justificación', 'Observaciones'];
+
+        
+
+        tarjetas.forEach(tarjeta => {
+          const campos = Array.from(tarjeta.querySelectorAll('p')).map(p => {
+
+            const parts = p.textContent.split(':');
+            return parts.slice(1).join(':').trim();
+          });
+
+          body.push(campos);
+        });
+      } else {
+        if (table) {
+          headers = [...table.querySelectorAll('thead th')]
+            .slice(0, -1)
+            .map(th => th.textContent.trim());
+
+          body = [...table.querySelectorAll('tbody tr')].map(tr =>
+            [...tr.querySelectorAll('td')]
+              .slice(0, -1)
+              .map(td => td.textContent.trim())
+          );
+        }
+      }
+
+
 
       const doc = new jsPDF('p', 'pt', 'a4');
       const margin = 40;
@@ -237,24 +349,53 @@ document.querySelectorAll('.download').forEach(btn => {
         doc.text(`Departamento: ${departamento}`, margin, y); y += 16;
         doc.text(`Fecha: ${fecha}`, margin, y); y += 20;
 
-        // Tabla
-        doc.autoTable({
-          head: [headers],
-          body: body,
-          startY: y,
-          margin: { left: margin, right: margin },
-          styles: { fontSize: 9 },
-          headStyles: {
-            fillColor: [0, 102, 204],
-            textColor: [255, 255, 255]
-          },
-          bodyStyles: {
-            fillColor: [230, 240, 255]
-          },
-          alternateRowStyles: {
-            fillColor: [255, 255, 255]
-          }
-        });
+        const esFormatoF6 = formato.id === 'f6';
+
+      if (esFormatoF6) {
+          body.forEach((fila) => {
+          doc.setFont('helvetica', 'bold');
+          doc.text('Solicitud:', margin, y);
+          y += 14;
+
+        fila.forEach((valor, i) => {
+          doc.setFont('helvetica', 'normal');
+          const textoDividido = doc.splitTextToSize(`${headers[i]}: ${valor}`, 460);
+
+            // Dibuja el texto dividido línea por línea
+            doc.text(textoDividido, margin, y);
+
+            
+           y += textoDividido.length * 15; 
+         
+          });
+
+          y += 10;
+
+      if (y > pageHeight - 100) {
+        doc.addPage();
+        y = 60;
+      }
+    });
+      } else {
+      doc.autoTable({
+        head: [headers],
+        body: body,
+        startY: y,
+        margin: { left: margin, right: margin },
+        styles: { fontSize: 9 },
+        headStyles: {
+          fillColor: [0, 102, 204],
+          textColor: [255, 255, 255]
+        },
+        bodyStyles: {
+          fillColor: [230, 240, 255]
+        },
+        alternateRowStyles: {
+          fillColor: [255, 255, 255]
+        }
+      });
+    }
+
 
         if(tableId == 'f3-table'){
           // Firma
@@ -288,6 +429,7 @@ function validarCamposLista() {
 
 
     const mensajeExistente = contenedor.querySelector('.error-message');
+    
     if (mensajeExistente) mensajeExistente.remove();
 
 

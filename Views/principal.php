@@ -54,6 +54,7 @@ if (!isset($_SESSION['usuario'])) {
           <div class="card-format" data-target="f3">3. Formato de Solicitud de alta y modificación de usuario en el sistema de información.</div>
           <div class="card-format" data-target="f4">4. Modificación de OC SIFFS CA.</div>
           <div class="card-format" data-target="f5">5. Alta / Modificación / Desactivación de productos a clientes.</div>
+          <div class="card-format" data-target="f6">6. Formato Solicitud de Cambio / Requerimiento de Software.</div>
         </div>
       </section>
 
@@ -315,7 +316,6 @@ if (!isset($_SESSION['usuario'])) {
             <select id="f5-tipo">
               <option>Actualización de Precio</option>
               <option>Agregar Producto</option>
-              <option>Modificar cantidad de Producto</option>
             </select>
           </div>
         </div>
@@ -376,6 +376,63 @@ if (!isset($_SESSION['usuario'])) {
             descargar PDF</button>
         </div>
       </section>
+
+
+      <!-- ============================================================= -->
+      <!-- ========================== FORMATO 6 ======================== -->
+      <!-- ============================================================= -->
+      <section class="formato" id="f6">
+        <h2>FORMATO SOLICITUD DE CAMBIO / REQUERIMIENTO DE SOFTWARE</h2>
+
+        <h3>TIPO DE SOLICITUD</h3>
+        <div class="row">
+          <div><label>Tipo</label>
+            <select id="f6-tipo">
+              <option>Desarrollo nuevo</option>
+              <option>Mantenimiento</option>
+            </select>
+          </div>
+        </div>
+
+        
+          <div id="opciones-mantenimiento" classr="row" style="display: none;">
+            <label for="mantenimiento-tipo">Plataforma</label>
+            <select id="mantenimiento-tipo">
+              <option>SIFFS</option>
+            </select>
+        </div>
+
+        <h3>INFORMACIÓN DETALLADA</h3>
+        <div class="row">
+          <div><label>Titulo del Cambio</label><input id="f6-cambio" placeholder="Breve descripción del cambio solicitado"></div>
+        </div>
+        
+        <div class="row">
+          <div><label>Descripción Detallada</label><textarea id="f6-descripcion" placeholder="Detalle del requerimiento, funcionalidad esperada, etc."></textarea></div>
+        </div>
+
+        <div class="row">
+          <div><label>Justificación</label><textarea id="f6-justificacion" placeholder="¿Por qué se solicita el cambio? ¿Qué problema resuelve?"></textarea></div>
+        </div>
+
+        <div class="row">
+          <div><label>Observaciones adicionales</label><textarea id="f6-observacion"></textarea></div>
+        </div>
+          <div style="align-self:end; display: flex; justify-content: end;"><button class="btn" id="f6-add">Agregar</button></div>
+          
+        
+
+        <div id="f6-lista" class="card-container">
+          
+        
+        </div>
+
+
+        <div style="text-align:right">
+          <button class="btn download" style="margin-top: 10px;" data-table="f6-table" data-title="Formato 6 – Formato Solicitud de Cambio / Requerimiento">Guardar y
+            descargar PDF</button>
+        </div>
+      </section>
     </main>
     <footer>
     </footer>
@@ -383,4 +440,4 @@ if (!isset($_SESSION['usuario'])) {
 </body>
 
 </html>
-<script src="../JS/index.js?v=1.2" type="module"></script>
+<script src="../JS/index.js?v=1.9" type="module"></script>
